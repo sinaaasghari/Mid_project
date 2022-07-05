@@ -12,7 +12,7 @@ using namespace std;
 string start_menu = "1.Login\n2.Sign up\n3.Exit\nEnter your command : ";
 string main_menu = "1.User information\n2.Upload article\n3.verification\n4.Check All Articles\n5.back\nEnter your command: ";
 
-
+//check a sententence statrt with capital latter
 bool startWithCapSentence(string ID){
     string line;
     ifstream Text("./accounts/" + ID + ".txt");
@@ -27,6 +27,8 @@ bool startWithCapSentence(string ID){
     vector<int> references;
     string text;
     int is_verified;
+    //chon file text shamel name, date, author, article id va references bood 
+    //va ma mikhastim faghat text ro check konim inja vorodi gereftim
     getline(Text, name);
     getline(Text, date);
     getline(Text, author);
@@ -41,6 +43,7 @@ bool startWithCapSentence(string ID){
     }
     getline(Text, _is_verified);
     is_verified = stoi(_is_verified);
+    //to halghe paeen check mikonim
     while(!Text.eof()){
         getline(Text, line);
         if(islower(line[0])) return false;
@@ -70,7 +73,7 @@ bool correctSigns(string ID){
     getline(Text, author);
     getline(Text, _article_id);
     getline(Text, _references_count);
-    article_id = stoi(_article_id);
+    article_id = stoi(_article_id); //string to integer
     references_count = stoi(_references_count);
     for(int i = 0; i<references_count; i++){
         getline(Text, _reference);
@@ -88,10 +91,11 @@ bool correctSigns(string ID){
         int flag = 0;
         getline(Text, line);
         for(int i = 0 ; i < line.length()-1 ; i++){
+            //har line 2 ta 2 ta substr migirim
             string sub = line.substr(i, 2);
-            if(signs[sub[0]] && signs[sub[1]]) return false;
-            if(signs[line[i]] && line[i+1] != ' ') return false;
-            if(sub == "  ") return false;
+            if(signs[sub[0]] && signs[sub[1]]) return false; //sign tekrari posht ham nayad
+            if(signs[line[i]] && line[i+1] != ' ') return false; // baed sign space bashe
+            if(sub == "  ") return false; // baed sign 2 ta space nabashe
         }
     }
     return true ;  
@@ -123,7 +127,7 @@ bool correctParentheses(string ID){
     }
     getline(Text, _is_verified);
     is_verified = stoi(_is_verified);
-    int check = 0;
+    int check = 0; // in baraye baz va baste bodan parantez zade shode
     while(!Text.eof()){
         getline(Text, line);
         for(int i = 0; i < line.length(); i++){
@@ -134,11 +138,11 @@ bool correctParentheses(string ID){
                 check--;
             }
             if(check < 0){
-                return false;
+                return false; // inja yani parantez ziad baste shode
             }
         }
         if(check > 0){
-            return false;
+            return false; // parantez be andaze kafi baste nashode
         }
     }
     return true;
@@ -171,6 +175,7 @@ bool numberOfLine(string ID){
     getline(Text, _is_verified);
     is_verified = stoi(_is_verified);
     int lines = 0;
+    // ba getline teded line ha ro mishmorim
     while(!Text.eof()){
         getline(Text, line);
         lines++;
@@ -180,6 +185,7 @@ bool numberOfLine(string ID){
     }
     return false;
 }
+//article nabayad 12 ta kalame bishtar bashe
 bool checkArticleName(string article_name){
     int words = 1;
     for(int i = 0; i < article_name.size(); i++){
@@ -203,7 +209,7 @@ class article{
         string text;
         int references_count;
         vector<int> references;
-        map<string, int> mapped;
+        map<string, int> mapped; // baraye shomaresh kalame ha zadim
         int is_verified;
     public:
         article(string _name, string _date, string _author, int _article_id,
@@ -215,14 +221,14 @@ class article{
             text = _text;      
             references_count = count;
             for(int  i = 0; i<_references.size(); i++){
-                references.push_back(_references[i]);
+                references.push_back(_references[i]); //dar vector references ha inaro mirizim
             }
             string tmp = "";
             for(int i = 0; i<text.length(); i++){
                 if(isalpha(text[i])) tmp.push_back(text[i]);
                 else{
                     if(tmp.length()>0){
-                        mapped[tmp]++;
+                        mapped[tmp]++; //tekrar har kalame shomrde mishe
                         tmp = "";
                     }
                 }
@@ -265,7 +271,7 @@ class article{
             int words_count = 0, flag = 1;
             for(auto W : mapped){
                 words_count += W.second;
-                if(W.second>50){
+                if(W.second>50){ //ye kalame 50 bar tekrar nashode bashe
                     flag = 0;
                 }
             }
@@ -321,7 +327,6 @@ class user{
         int articles_count;
         vector<int> articles_ID;
         vector<article> articles;
-        //map<int, int> verification;
     public:
         user(string _name, string _user_name, string _password, int _articles_count){
             user_name = _user_name;
@@ -365,7 +370,7 @@ class user{
         }
 };
 vector<user> all_users;
-
+//chon string moghe vorodi baed enter dige vorodi nemigere intori zadim ke bayad 2 bar eneter bezanim.
 string input(){
     string tmp, line;
     getline(cin, line);
@@ -389,7 +394,6 @@ article getArticle(string file_name){
     int reference;
     vector<int> references;
     string line, text;
-    //map<string, int> mapped;
     int is_verified;
     getline(Article, name);
     getline(Article, date);
