@@ -12,11 +12,11 @@ using namespace std;
 string start_menu = "1.Login\n2.Sign up\n3.Exit\nEnter your command : ";
 string main_menu = "1.User information\n2.Upload article\n3.verification\n4.Check All Articles\n5.back\nEnter your command: ";
 
-//check a sententence statrt with capital latter
+
 bool startWithCapSentence(string ID){
     string line;
     ifstream Text("./accounts/" + ID + ".txt");
-    string name;
+    string name;                                                //checks a sententence statrts with capital latter    
     string date;
     string author;
     int article_id;
@@ -27,8 +27,6 @@ bool startWithCapSentence(string ID){
     vector<int> references;
     string text;
     int is_verified;
-    //chon file text shamel name, date, author, article id va references bood 
-    //va ma mikhastim faghat text ro check konim inja vorodi gereftim
     getline(Text, name);
     getline(Text, date);
     getline(Text, author);
@@ -56,7 +54,7 @@ bool startWithCapSentence(string ID){
     return true;
 }
 bool correctSigns(string ID){
-    ifstream Text("./accounts/" + ID + ".txt");
+    ifstream Text("./accounts/" + ID + ".txt");                 //Checks signs occurance
     string name;
     string date;
     string author;
@@ -93,9 +91,9 @@ bool correctSigns(string ID){
         for(int i = 0 ; i < line.length()-1 ; i++){
             //har line 2 ta 2 ta substr migirim
             string sub = line.substr(i, 2);
-            if(signs[sub[0]] && signs[sub[1]]) return false; //sign tekrari posht ham nayad
-            if(signs[line[i]] && line[i+1] != ' ') return false; // baed sign space bashe
-            if(sub == "  ") return false; // baed sign 2 ta space nabashe
+            if(signs[sub[0]] && signs[sub[1]]) return false;            //sign tekrari posht ham nayad
+            if(signs[line[i]] && line[i+1] != ' ') return false;        //baed sign space bashe
+            if(sub == "  ") return false;                               //baed sign 2 ta space nabashe
         }
     }
     return true ;  
@@ -112,7 +110,7 @@ bool correctParentheses(string ID){
     int reference;
     vector<int> references;
     string line, text;
-    int is_verified;
+    int is_verified;                                                    //Checks if paranthese are balanced or not
     getline(Text, name);
     getline(Text, date);
     getline(Text, author);
@@ -127,7 +125,7 @@ bool correctParentheses(string ID){
     }
     getline(Text, _is_verified);
     is_verified = stoi(_is_verified);
-    int check = 0; // in baraye baz va baste bodan parantez zade shode
+    int check = 0;                                                  
     while(!Text.eof()){
         getline(Text, line);
         for(int i = 0; i < line.length(); i++){
@@ -138,19 +136,19 @@ bool correctParentheses(string ID){
                 check--;
             }
             if(check < 0){
-                return false; // inja yani parantez ziad baste shode
+                return false;                                       
             }
         }
         if(check > 0){
-            return false; // parantez be andaze kafi baste nashode
+            return false;                                           
         }
     }
     return true;
 }
-bool numberOfLine(string ID){
+bool numberOfLine(string ID){                                       
     ifstream Text("./accounts/" + ID + ".txt");
     string name;
-    string date;
+    string date;                                                          //This function checks if article has more than 3 parantheses
     string author;
     int article_id;
     string _article_id;
@@ -185,8 +183,8 @@ bool numberOfLine(string ID){
     }
     return false;
 }
-//article nabayad 12 ta kalame bishtar bashe
-bool checkArticleName(string article_name){
+
+bool checkArticleName(string article_name){                             //article name must have at most 12 words
     int words = 1;
     for(int i = 0; i < article_name.size(); i++){
         if(article_name[i] == ' '){
@@ -198,7 +196,26 @@ bool checkArticleName(string article_name){
     }
     return true;
 }
-
+int RatePass(string& input){
+    int hasLower = 0, hasUpper = 0;
+    int hasDigit = 0, specialChar = 0;
+    string normalChars = "abcdefghijklmnopqrstu"
+        "vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ";
+ 
+    for (int i = 0; i < input.length(); i++) {
+        if (islower(input[i]))
+            hasLower = 1;
+        if (isupper(input[i]))
+            hasUpper = 1;
+        if (isdigit(input[i]))
+            hasDigit = 1;
+ 
+        size_t special = input.find_first_not_of(normalChars);
+        if (special != string::npos)
+            specialChar = 1;
+    }
+    return hasLower + hasUpper + hasDigit + specialChar;
+}
 class user;
 class article{
     private:
@@ -209,7 +226,7 @@ class article{
         string text;
         int references_count;
         vector<int> references;
-        map<string, int> mapped; // baraye shomaresh kalame ha zadim
+        map<string, int> mapped;                                        // baraye shomaresh kalame ha zadim
         int is_verified;
     public:
         article(string _name, string _date, string _author, int _article_id,
@@ -221,14 +238,15 @@ class article{
             text = _text;      
             references_count = count;
             for(int  i = 0; i<_references.size(); i++){
-                references.push_back(_references[i]); //dar vector references ha inaro mirizim
+                references.push_back(_references[i]);                   //dar vector references ha inaro mirizim
             }
+            //Mapping article text
             string tmp = "";
             for(int i = 0; i<text.length(); i++){
                 if(isalpha(text[i])) tmp.push_back(text[i]);
                 else{
                     if(tmp.length()>0){
-                        mapped[tmp]++; //tekrar har kalame shomrde mishe
+                        mapped[tmp]++;                                  //tekrar har kalame shomrde mishe
                         tmp = "";
                     }
                 }
@@ -236,9 +254,10 @@ class article{
             is_verified = 0;
         }
         friend ofstream & operator <<(ofstream & stream, article A);
+        //checking similarity of two articles using cosine similarity algorithm
         float similarity(article A){
             vector<int> vector_1, vector_2;
-            map<string, int> Union;
+            map<string, int> Union;                                     //Union map is union of two articles' words
             for(auto element : mapped){
                 if(!Union[element.first]){
                     Union[element.first]++;
@@ -250,28 +269,28 @@ class article{
                 }
             }
             for(auto element : Union){
-                vector_1.push_back(mapped[element.first]);
+                vector_1.push_back(mapped[element.first]);              //vecotr bordar e matn ha ast
                 vector_2.push_back(A.mapped[element.first]);
             }
             int sum_1 = 0, sum_2 = 0;
             for(auto x:vector_1){
-                sum_1 += (x*x);
+                sum_1 += (x*x);                                         //Measure of vector_1
             }   
             for(auto x:vector_2){
-                sum_2 += (x*x);
+                sum_2 += (x*x);                                         //Measure of vector_2
             }
             double percentage = 0;
             for(int i = 0; i<vector_1.size(); i++){
-                percentage += vector_1[i] * vector_2[i];
+                percentage += vector_1[i] * vector_2[i];                //Dot product of two articles (article_1 • article_2)
             }
-            percentage = percentage * 100/sqrt(sum_1 * sum_2);
+            percentage = percentage * 100/sqrt(sum_1 * sum_2);          //Computes similarity percentage of two articles
             return percentage;
         }
         void verify(vector<article> all_articles){
             int words_count = 0, flag = 1;
             for(auto W : mapped){
                 words_count += W.second;
-                if(W.second>50){ //ye kalame 50 bar tekrar nashode bashe
+                if(W.second>50){                                        //ye kalame 50 bar tekrar nashode bashe
                     flag = 0;
                 }
             }
@@ -279,7 +298,7 @@ class article{
             sleep(3);
             if(flag == 1 && words_count <= 5000 && words_count >= 100 &&
                 numberOfLine(id) && checkArticleName(name) && startWithCapSentence(id)&& 
-                correctSigns(id) && correctParentheses(id)){
+                correctSigns(id) && correctParentheses(id)){            //Checking all conditions for verifying article
                 int flag1 = 1;
                 for(auto A : all_articles){
                     if(this->similarity(A)>50){
@@ -298,7 +317,7 @@ class article{
         }
         
         int getID(){
-            return article_id;
+            return article_id;                                      
         }
         int isVerified(){
             return is_verified;
@@ -312,14 +331,14 @@ class article{
 ofstream & operator <<(ofstream & stream, article A){
     stream << A.name << '\n' << A.date << '\n' << A.author << '\n';
     stream << A.article_id << '\n' << A.references_count << '\n';
-    for(auto x : A.references){
+    for(auto x : A.references){                                         //Overloaded operator << for writing article in file
         stream << x << '\n';
     }
     stream << A.is_verified;
     stream << A.text;
     return stream;
 }
-class user{
+class user{                                                             //User class
     private:
         string user_name;
         string password;
@@ -330,7 +349,7 @@ class user{
     public:
         user(string _name, string _user_name, string _password, int _articles_count){
             user_name = _user_name;
-            password = _password;
+            password = _password;                                   
             name = _name;
             articles_count = _articles_count;
         }
@@ -341,7 +360,7 @@ class user{
             articles_count += 1;
         }
 
-        void display(){
+        void display(){                                                 //This function Displays User data
             cout << "Username : " << user_name << "\n";
             cout << "Name : " << name << "\n";
             cout << "Articles count : " << articles_count << "\n";
@@ -350,11 +369,11 @@ class user{
             }
             cout << endl;
         }
-        string getUsername(){
+        string getUsername(){                                           //Encapsulation                                      
             return user_name;
         }
         string getPassword(){
-            return password;
+            return password;                                            
         }
         string getName(){
             return name;
@@ -370,10 +389,10 @@ class user{
         }
 };
 vector<user> all_users;
-//chon string moghe vorodi baed enter dige vorodi nemigere intori zadim ke bayad 2 bar eneter bezanim.
+
 string input(){
     string tmp, line;
-    getline(cin, line);
+    getline(cin, line);                                             //This function gets multi-line input from input stram
     while(line!=""){
         tmp = tmp + "\n" + line;
         getline(cin, line);
@@ -385,7 +404,7 @@ string input(){
 article getArticle(string file_name){
     ifstream Article("./accounts/" + file_name +".txt");
     string name;
-    string date;
+    string date;                                                   //This function returns an article saved in a specific path
     string author;
     int article_id;
     string _article_id;
@@ -420,7 +439,7 @@ article getArticle(string file_name){
 
 vector<article> getAllArticles(){
     vector<article> all_articles;
-    ifstream users("users.txt");
+    ifstream users("users.txt");                                 //This function returns a vector of all published articles
     string name, user_name, password, count;
     int articles_count;
     while(!users.eof()){
@@ -447,22 +466,21 @@ vector<article> all_articles = getAllArticles();
 
 
 void main_stream(user &User){
-    
     int command;
     while(true){
         system("cls");
-        cout << main_menu;
+        cout << main_menu;                                       //This function is main stream of program
         cin >> command;
-        system("cls");
-        if(command == 1){
-            User.display();
+        system("cls");                                          
+        if(command == 1){                                       
+            User.display();                                      //Shows user information
             sleep(3);
         }
-        else if(command == 2){
+        else if(command == 2){      
             string name;
-            string date;
-            string author, _id;
-            int article_id;
+            string date;                                
+            string author, _id;                                  
+            int article_id;                                      //Uploading article
             string text;
             int references_count = 0;
             vector<int> references;
@@ -487,11 +505,11 @@ void main_stream(user &User){
             }
             text = input();
             article A(name, date, author, article_id, text, references_count, references);
-            ofstream strm(path, ios::out);
-            strm << A;
+            ofstream strm(path, ios::out);      
+            strm << A;                                          //Writing article in file useing overloaded operator <<
             strm.close();
             A.verify(all_articles);
-            User.addArticle(A);
+            User.addArticle(A);                                
             all_articles.push_back(A);
         }
         else if(command == 3){
@@ -499,7 +517,7 @@ void main_stream(user &User){
             cout << "Enter your article id : ";
             cin >> id;
             for(auto A : User.getArticles()){
-                if(A.getID() == id){
+                if(A.getID() == id){                            //checks if an article is verified or not
                     flag = 1;
                     if(A.isVerified() == 1){
                         cout << "Accepted\n";
@@ -516,7 +534,7 @@ void main_stream(user &User){
         }
         else if(command == 4){
             for(auto A : User.getArticles()){
-                if(A.isVerified() == 1){
+                if(A.isVerified() == 1){                        //Checks all articles verification status
                     cout << A.getID() << " : is accepted.\n"; 
                 }
                 else{
@@ -526,11 +544,9 @@ void main_stream(user &User){
             sleep(3);
         }
         else if(command == 5){
-            for(auto x : User.getArticlesID()) cout << x << endl;
-            sleep(2);
             string file_name = "./accounts/" + User.getUsername() + ".txt";
             ofstream articles_id(file_name, ios::out);
-            for(auto x : User.getArticlesID()){
+            for(auto x : User.getArticlesID()){                 //Saves users information in articles
                 articles_id << x << '\n';
             }
             articles_id.close();
@@ -548,13 +564,13 @@ void main_stream(user &User){
 void start(){
     int all = 0;
     ifstream users("users.txt");
-    string name, user_name, password, _count;
+    string name, user_name, password, _count;                   //Starting function of program
     int count;
     while(!users.eof()){
         getline(users, name);
         getline(users, user_name);
         getline(users, password);
-        getline(users, _count);
+        getline(users, _count);                                 //Loads all users information
         count = stoi(_count);
         user User(name, user_name, password, count);
         if(count > 0){
@@ -582,7 +598,7 @@ void start(){
             cout << "Enter Username : ";
             ws(cin);
             getline(cin, user_name);
-            cout << "Enter Password : ";
+            cout << "Enter Password : ";                        //Login 
             getline(cin, password);
             for(auto U : all_users){
                 if(U.getUsername() == user_name && U.getPassword() == password){
@@ -603,7 +619,7 @@ void start(){
             ws(cin);
             getline(cin, name);
             cout << "Enter your Username : ";
-            getline(cin, user_name);
+            getline(cin, user_name);                            //Sign up
             cout << "Enter your Password : ";
             getline(cin, password);
             for(auto U : all_users){
@@ -623,7 +639,7 @@ void start(){
         else if(command == 3){
             ofstream users("users.txt", ios::out);
             int flag = 0;
-            for(auto U : all_users){
+            for(auto U : all_users){                            //Saves users information and Exits program
                 if(flag == 1){
                     users << '\n';
                 }
@@ -641,7 +657,7 @@ void start(){
 
 
 int main(){
-    start();
+    start();                                                    
 
     return 0;
 }
